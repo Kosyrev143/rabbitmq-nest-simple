@@ -1,0 +1,38 @@
+services:
+  consumer:
+    build:
+      context: .
+      dockerfile: consumer.Dockerfile
+    container_name: consumer
+    restart: on-failure
+    ports:
+      - 3000:3000
+    command: npm run start:consumer
+    links:
+      - rabbitMq
+
+  producer:
+    build:
+      context: .
+      dockerfile: producer.Dockerfile
+    container_name: producer
+    restart: on-failure
+    ports:
+      - 3001:3001
+    command: npm run start:producer
+    links:
+      - rabbitMq
+
+  rabbitMq:
+    image: rabbitmq:3-management
+    ports:
+      - "8080:15672"
+      - "5672:5672"
+      - "5671:5671"
+    environment:
+      RABBITMQ_DEFAULT_PASS: asdfjkl
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_VHOST: vhost
+
+volumes:
+  rabbitmq_data:
